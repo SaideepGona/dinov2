@@ -45,7 +45,30 @@ class SSLMetaArch(nn.Module):
         if cfg.student.pretrained_weights:
             chkpt = torch.load(cfg.student.pretrained_weights)
             logger.info(f"OPTIONS -- pretrained weights: loading from {cfg.student.pretrained_weights}")
-            student_backbone.load_state_dict(chkpt["model"], strict=False)
+            state_dict = chkpt["model"]
+            # Interpolate pos_embed if checkpoint shape doesn't match model
+            if "pos_embed" in state_dict and state_dict["pos_embed"].shape != student_backbone.pos_embed.shape:
+                chkpt_pos = state_dict["pos_embed"].float()  # [1, N_ckpt+1, dim]
+                cls_pos = chkpt_pos[:, :1, :]
+                patch_pos = chkpt_pos[:, 1:, :]
+                N_ckpt = patch_pos.shape[1]
+                N_model = student_backbone.pos_embed.shape[1] - 1
+                dim = patch_pos.shape[2]
+                sqrt_N_ckpt = int(N_ckpt ** 0.5)
+                sqrt_N_model = int(N_model ** 0.5)
+                logger.info(
+                    f"OPTIONS -- pretrained weights: interpolating pos_embed "
+                    f"from {sqrt_N_ckpt}x{sqrt_N_ckpt} to {sqrt_N_model}x{sqrt_N_model}"
+                )
+                patch_pos = nn.functional.interpolate(
+                    patch_pos.reshape(1, sqrt_N_ckpt, sqrt_N_ckpt, dim).permute(0, 3, 1, 2),
+                    size=(sqrt_N_model, sqrt_N_model),
+                    mode="bicubic",
+                    align_corners=False,
+                )
+                patch_pos = patch_pos.permute(0, 2, 3, 1).reshape(1, -1, dim)
+                state_dict["pos_embed"] = torch.cat((cls_pos, patch_pos), dim=1).to(chkpt_pos.dtype)
+            student_backbone.load_state_dict(state_dict, strict=False)
 
         self.embed_dim = embed_dim
         self.dino_out_dim = cfg.dino.head_n_prototypes
