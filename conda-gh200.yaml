@@ -1,4 +1,5 @@
 name: dinov2-gh200
+prefix: /gpfs/data/pearson-lab/PERSONAL/saideep/.conda/envs/dinov2-gh200
 channels:
   - defaults
   - pytorch
