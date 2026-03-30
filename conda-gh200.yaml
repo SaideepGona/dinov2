@@ -2,12 +2,10 @@ name: dinov2-gh200
 prefix: /gpfs/data/pearson-lab/PERSONAL/saideep/.conda/envs/dinov2-gh200
 channels:
   - conda-forge
-  - pytorch
-  - nvidia
 dependencies:
   - python=3.10
-  - pytorch::pytorch>=2.2.0
-  - pytorch::torchvision>=0.17.0
+  - pytorch>=2.2.0
+  - torchvision>=0.17.0
   - omegaconf
   - torchmetrics=0.10.3
   - fvcore
