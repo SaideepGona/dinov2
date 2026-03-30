@@ -4,8 +4,9 @@ channels:
   - conda-forge
 dependencies:
   - python=3.10
-  - pytorch>=2.2.0
-  - torchvision>=0.17.0
+  - pytorch>=2.2.0,<2.5.0
+  - pytorch-cuda=12.4
+  - torchvision>=0.17.0,<0.20.0
   - omegaconf
   - torchmetrics=0.10.3
   - fvcore
