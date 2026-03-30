@@ -5,7 +5,7 @@
 
 # --- Micromamba environment ---
 module load micromamba 2>/dev/null || true
-micromamba activate dinov2-gh200
+micromamba activate /gpfs/data/pearson-lab/PERSONAL/saideep/.conda/envs/dinov2-gh200
 
 # --- NCCL tuning for NVLink-C2C ---
 export NCCL_NET_GDR_LEVEL=PHB
