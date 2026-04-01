@@ -18,3 +18,19 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 # --- Enable TF32 for matmuls (H100) ---
 export NVIDIA_TF32_OVERRIDE=1
+
+# --- Copy WebDataset shards to local storage for fast I/O ---
+# Usage: LOCAL_SHARDS=$(copy_shards_local /gpfs/.../webdataset_shards)
+copy_shards_local() {
+    local src="$1"
+    local dst="${2:-/tmp/wds_shards}"
+    if [ -d "$dst" ] && [ "$(ls -A "$dst" 2>/dev/null)" ]; then
+        echo "Shards already cached at $dst" >&2
+    else
+        mkdir -p "$dst"
+        echo "Copying shards from $src to $dst ..." >&2
+        cp "$src"/*.tar "$dst"/
+        echo "Done. $(ls "$dst"/*.tar 2>/dev/null | wc -l) shards cached." >&2
+    fi
+    echo "$dst"
+}
