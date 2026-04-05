@@ -42,7 +42,8 @@ micromamba activate {conda_env}
 export NCCL_NET_GDR_LEVEL=PHB
 export NCCL_P2P_LEVEL=NVL
 export NCCL_IB_DISABLE=0
-export NCCL_SOCKET_IFNAME=eth0
+export NCCL_SOCKET_IFNAME={nccl_socket_ifname}
+export NCCL_IB_HCA={nccl_ib_hca}
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export NVIDIA_TF32_OVERRIDE=1
 export CUDA_VISIBLE_DEVICES=$SLURM_STEP_GPUS
@@ -113,6 +114,8 @@ def generate_scripts(args):
             num_workers=args.num_workers,
             dinov2_dir=args.dinov2_dir,
             base_config=args.base_config,
+            nccl_socket_ifname=args.nccl_socket_ifname,
+            nccl_ib_hca=args.nccl_ib_hca,
             extra_overrides=extra_overrides,
         )
 
@@ -185,6 +188,12 @@ def main():
                         help="Wall time per job (default: 24:00:00)")
     parser.add_argument("--exclude", default=None,
                         help="Nodes to exclude (e.g. cri22cn408)")
+
+    # NCCL settings
+    parser.add_argument("--nccl-socket-ifname", default="eno1",
+                        help="Network interface for NCCL (default: eno1)")
+    parser.add_argument("--nccl-ib-hca", default="mlx5",
+                        help="InfiniBand HCA for NCCL (default: mlx5)")
 
     # Training settings
     parser.add_argument("--num-workers", type=int, default=50,
