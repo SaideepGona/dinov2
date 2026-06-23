@@ -12,6 +12,7 @@ from functools import partial
 from fvcore.common.checkpoint import Checkpointer
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
 from torch.distributed.fsdp import ShardingStrategy
+from torch.distributed.fsdp import CPUOffload
 from torch.distributed.fsdp import MixedPrecision
 from torch.distributed.fsdp import StateDictType
 from torch.distributed.fsdp.sharded_grad_scaler import ShardedGradScaler
@@ -43,6 +44,8 @@ def get_fsdp_wrapper(model_cfg, modules_to_wrap=set()):
 
     sharding_strategy_config = sharding_strategy_dict[model_cfg.sharding_strategy]
 
+    cpu_offload_config = CPUOffload(offload_params=bool(getattr(model_cfg, "cpu_offload", False)))
+
     local_rank = distributed.get_local_rank()
 
     fsdp_wrapper = partial(
@@ -53,6 +56,7 @@ def get_fsdp_wrapper(model_cfg, modules_to_wrap=set()):
         sync_module_states=True,
         use_orig_params=True,
         auto_wrap_policy=ModuleWrapPolicy(modules_to_wrap),
+        cpu_offload=cpu_offload_config,
     )
     return fsdp_wrapper
 

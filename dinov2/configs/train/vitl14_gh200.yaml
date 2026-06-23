@@ -3,18 +3,21 @@ compute_precision:
   teacher:
     backbone:
       sharding_strategy: SHARD_GRAD_OP
+      cpu_offload: true
       mixed_precision:
         param_dtype: bf16
         reduce_dtype: bf16
         buffer_dtype: bf16
     dino_head:
       sharding_strategy: SHARD_GRAD_OP
+      cpu_offload: true
       mixed_precision:
         param_dtype: bf16
         reduce_dtype: bf16
         buffer_dtype: bf16
     ibot_head:
       sharding_strategy: SHARD_GRAD_OP
+      cpu_offload: true
       mixed_precision:
         param_dtype: bf16
         reduce_dtype: bf16
@@ -22,18 +25,21 @@ compute_precision:
   student:
     backbone:
       sharding_strategy: SHARD_GRAD_OP
+      cpu_offload: true
       mixed_precision:
         param_dtype: bf16
         reduce_dtype: bf16
         buffer_dtype: bf16
     dino_head:
       sharding_strategy: SHARD_GRAD_OP
+      cpu_offload: true
       mixed_precision:
         param_dtype: bf16
         reduce_dtype: bf16
         buffer_dtype: bf16
     ibot_head:
       sharding_strategy: SHARD_GRAD_OP
+      cpu_offload: true
       mixed_precision:
         param_dtype: bf16
         reduce_dtype: bf16
